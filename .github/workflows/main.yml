@@ -1,0 +1,29 @@
+name: Run Python Script
+
+on:
+  push:
+    branches: [ "main" ]  # 파일이 올라오면 실행하라
+  workflow_dispatch:      # 내가 수동으로 실행 버튼 눌러도 실행하라
+
+jobs:
+  run-code:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write     # 그림 파일을 다시 저장소에 쓸 수 있는 권한
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Python & Libraries
+        run: |
+          pip install pandas seaborn matplotlib
+
+      - name: Execute Script
+        run: python visualize.py
+
+      - name: Save Image to Repository
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add walking_grass.png
+          git commit -m "Update result image" || exit 0
+          git push
